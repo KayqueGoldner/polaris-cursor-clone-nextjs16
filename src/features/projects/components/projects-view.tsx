@@ -10,6 +10,7 @@ import {
   animals,
 } from "unique-names-generator";
 import { useEffect, useState } from "react";
+import Image from "next/image";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -18,7 +19,6 @@ import { useCreateProject } from "@/features/projects/hooks/use-projects";
 
 import { ProjectsList } from "./projects-list";
 import { ProjectsCommandDialog } from "./projects-command-dialog";
-import Image from "next/image";
 
 const font = Poppins({
   subsets: ["latin"],
