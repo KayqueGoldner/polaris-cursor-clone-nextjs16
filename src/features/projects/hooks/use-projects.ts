@@ -6,6 +6,10 @@ import { useAuth } from "@clerk/nextjs";
 import { api } from "../../../../convex/_generated/api";
 import { Id, Doc } from "../../../../convex/_generated/dataModel";
 
+export const useProject = (id: Id<"projects">) => {
+  return useQuery(api.projects.getById, { id });
+};
+
 export const useProjects = () => {
   return useQuery(api.projects.get);
 };
@@ -36,6 +40,48 @@ export const useCreateProject = () => {
           newProject,
           ...existingProjects,
         ]);
+      }
+    },
+  );
+};
+
+export const useRenameProject = (id: Id<"projects">) => {
+  const { userId } = useAuth();
+
+  return useMutation(api.projects.rename).withOptimisticUpdate(
+    (localStore, args) => {
+      const existingProject = localStore.getQuery(api.projects.getById, { id });
+
+      if (existingProject !== undefined && existingProject !== null) {
+        localStore.setQuery(
+          api.projects.getById,
+          { id },
+          {
+            ...existingProject,
+            name: args.name,
+            updatedAt: Date.now(),
+          },
+        );
+      }
+
+      const existingProjects = localStore.getQuery(api.projects.get);
+
+      if (existingProjects !== undefined) {
+        localStore.setQuery(
+          api.projects.get,
+          {},
+          existingProjects.map((project) => {
+            if (project._id === id) {
+              return {
+                ...project,
+                name: args.name,
+                updatedAt: Date.now(),
+              };
+            }
+
+            return project;
+          }),
+        );
       }
     },
   );
