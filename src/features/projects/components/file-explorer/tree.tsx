@@ -3,6 +3,7 @@ import { FileIcon, FolderIcon } from "@react-symbols/icons/utils";
 import { useState } from "react";
 
 import { cn } from "@/lib/utils";
+import { useEditor } from "@/features/editor/hooks/use-editor";
 
 import {
   useCreateFile,
@@ -33,6 +34,8 @@ export const Tree = ({ item, level = 0, projectId }: TreeProps) => {
   const deleteFile = useDeleteFile();
   const createFile = useCreateFile();
   const createFolder = useCreateFolder();
+
+  const { openFile, closeTab, activeTabId } = useEditor(projectId);
 
   const folderContents = useFolderContents({
     projectId,
@@ -77,6 +80,7 @@ export const Tree = ({ item, level = 0, projectId }: TreeProps) => {
 
   if (item.type === "file") {
     const fileName = item.name;
+    const isActive = activeTabId === item._id;
 
     if (isRenaming) {
       return (
@@ -94,12 +98,12 @@ export const Tree = ({ item, level = 0, projectId }: TreeProps) => {
       <TreeItemWrapper
         item={item}
         level={level}
-        isActive={false}
-        onClick={() => {}}
-        onDoubleClick={() => {}}
+        isActive={isActive}
+        onClick={() => openFile(item._id, { pinned: false })}
+        onDoubleClick={() => openFile(item._id, { pinned: true })}
         onRename={() => setIsRenaming(true)}
         onDelete={() => {
-          // TODO: close tab
+          closeTab(item._id);
           deleteFile({ id: item._id });
         }}
       >
@@ -202,7 +206,6 @@ export const Tree = ({ item, level = 0, projectId }: TreeProps) => {
         onDoubleClick={() => {}}
         onRename={() => setIsRenaming(true)}
         onDelete={() => {
-          // TODO: close tab
           deleteFile({ id: item._id });
         }}
         onCreateFile={() => startCreating("file")}
