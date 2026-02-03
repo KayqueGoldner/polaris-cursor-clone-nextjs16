@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 
 import { useFile, useUpdateFile } from "@/features/projects/hooks/use-files";
 
@@ -23,6 +23,12 @@ export const EditorView = ({ projectId }: EditorViewProps) => {
 
   const isActiveFileBinary = activeFile && activeFile.storageId;
   const isActiveFileText = activeFile && !activeFile.storageId;
+
+  useEffect(() => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+  }, [activeTabId]);
 
   return (
     <div className="flex h-full flex-col">
