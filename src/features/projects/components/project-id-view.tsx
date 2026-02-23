@@ -9,6 +9,7 @@ import { EditorView } from "@/features/editor/components/editor-view";
 
 import { Id } from "../../../../convex/_generated/dataModel";
 import { FileExplorer } from "./file-explorer";
+import { PreviewView } from "./preview-view";
 
 interface ProjectIdViewProps {
   projectId: Id<"projects">;
@@ -69,7 +70,7 @@ export const ProjectIdView = ({ projectId }: ProjectIdViewProps) => {
             activeView === "preview" ? "visible" : "invisible",
           )}
         >
-          <div>preview</div>
+          <PreviewView projectId={projectId} />
         </div>
       </div>
     </div>
