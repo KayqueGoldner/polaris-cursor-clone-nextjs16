@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { FaGithub } from "react-icons/fa";
 import { Allotment } from "allotment";
 
 import { cn } from "@/lib/utils";
@@ -10,6 +9,7 @@ import { EditorView } from "@/features/editor/components/editor-view";
 import { Id } from "../../../../convex/_generated/dataModel";
 import { FileExplorer } from "./file-explorer";
 import { PreviewView } from "./preview-view";
+import { ExportPopover } from "./export-popover";
 
 interface ProjectIdViewProps {
   projectId: Id<"projects">;
@@ -37,10 +37,7 @@ export const ProjectIdView = ({ projectId }: ProjectIdViewProps) => {
           onClick={() => setActiveView("preview")}
         />
         <div className="flex h-full flex-1 items-center justify-end">
-          <div className="flex h-full cursor-pointer items-center gap-1.5 border-l px-3 text-muted-foreground hover:bg-accent/30">
-            <FaGithub className="size-3.5" />
-            <span>Export</span>
-          </div>
+          <ExportPopover projectId={projectId} />
         </div>
       </nav>
       <div className="relative flex-1">

@@ -19,6 +19,7 @@ import { useCreateProject } from "@/features/projects/hooks/use-projects";
 
 import { ProjectsList } from "./projects-list";
 import { ProjectsCommandDialog } from "./projects-command-dialog";
+import { ImportGithubDialog } from "./import-github-dialog";
 
 const font = Poppins({
   subsets: ["latin"],
@@ -29,12 +30,17 @@ export const ProjectsView = () => {
   const createProject = useCreateProject();
 
   const [commandDialogOpen, setCommandDialogOpen] = useState(false);
+  const [importDialogOpen, setImportDialogOpen] = useState(false);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "k" && (event.ctrlKey || event.metaKey)) {
         event.preventDefault();
         setCommandDialogOpen((prev) => !prev);
+      }
+      if (event.key === "i" && (event.ctrlKey || event.metaKey)) {
+        event.preventDefault();
+        setImportDialogOpen((prev) => !prev);
       }
     };
 
@@ -50,6 +56,10 @@ export const ProjectsView = () => {
       <ProjectsCommandDialog
         open={commandDialogOpen}
         onOpenChange={setCommandDialogOpen}
+      />
+      <ImportGithubDialog
+        open={importDialogOpen}
+        onOpenChange={setImportDialogOpen}
       />
 
       <div className="flex min-h-screen flex-col items-center justify-center bg-sidebar p-6 md:p-16">
@@ -103,7 +113,7 @@ export const ProjectsView = () => {
               <Button
                 variant="outline"
                 className="flex h-full flex-col items-start justify-start gap-6 rounded-none border bg-background p-4"
-                onClick={() => {}}
+                onClick={() => setImportDialogOpen(true)}
               >
                 <div className="flex w-full items-center justify-between">
                   <FaGithub className="size-4" />
