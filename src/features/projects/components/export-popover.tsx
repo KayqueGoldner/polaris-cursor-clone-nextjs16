@@ -84,24 +84,36 @@ export const ExportPopover = ({ projectId }: ExportPopoverProps) => {
         toast.success("Exporting repository...");
       } catch (error) {
         if (error instanceof HTTPError) {
-          if (error.response.status === 401) {
-            const body = await error.response.json<{ error: string }>();
-            if (body?.error?.includes("GitHub not connected")) {
-              toast.error("Please connect your GitHub account first", {
-                action: {
-                  label: "Connect",
-                  onClick: () => {
-                    openUserProfile();
-                  },
+          const body = await error.response.json<{ error: string }>();
+
+          if (body?.error?.includes("GitHub not connected")) {
+            toast.error("Please connect your GitHub account first", {
+              action: {
+                label: "Connect",
+                onClick: () => {
+                  openUserProfile();
                 },
-              });
-              setOpen(false);
-              return;
-            }
-          } else {
-            toast.error("Unable to export repository.");
+              },
+            });
+            setOpen(false);
+            return;
+          }
+
+          if (body?.error?.includes("Pro plan required")) {
+            toast.error("Pro plan required", {
+              action: {
+                label: "Upgrade",
+                onClick: () => {
+                  openUserProfile();
+                },
+              },
+            });
+            setOpen(false);
+            return;
           }
         }
+
+        toast.error("Unable to export repository.");
       }
     },
   });
