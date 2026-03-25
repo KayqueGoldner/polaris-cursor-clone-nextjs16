@@ -19,6 +19,37 @@ export const useConversations = (projectId: Id<"projects">) => {
 };
 
 export const useCreateConversation = () => {
-  return useMutation(api.conversations.create);
+  return useMutation(api.conversations.create).withOptimisticUpdate(
+    (localStore, args) => {
+      const existingConversations = localStore.getQuery(
+        api.conversations.getByProject,
+        {
+          projectId: args.projectId,
+        },
+      );
+
+      if (existingConversations !== undefined) {
+        // eslint-disable-next-line react-hooks/purity -- optimisitic update callback runs on mutation, not on render
+        const now = Date.now();
+
+        const newConversation = {
+          _id: crypto.randomUUID() as Id<"conversations">,
+          _creationTime: now,
+          title: args.title,
+          projectId: args.projectId,
+          createdAt: now,
+          updatedAt: now,
+        };
+
+        localStore.setQuery(
+          api.conversations.getByProject,
+          {
+            projectId: args.projectId,
+          },
+          [...existingConversations, newConversation],
+        );
+      }
+    },
+  );
   // TODO: add optimistic mutation
 };

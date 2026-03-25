@@ -51,7 +51,7 @@ export const ImportGithubDialog = ({
             },
           })
           .json<{
-            succeess: boolean;
+            success: boolean;
             projectId: Id<"projects">;
             eventId: string;
           }>();
@@ -63,26 +63,36 @@ export const ImportGithubDialog = ({
         router.push(`/projects/${projectId}`);
       } catch (error) {
         if (error instanceof HTTPError) {
-          if (error.response.status === 401) {
-            const body = await error.response.json<{ error: string }>();
-            if (body?.error?.includes("GitHub not connected")) {
-              toast.error("Please connect your GitHub account first", {
-                action: {
-                  label: "Connect",
-                  onClick: () => {
-                    openUserProfile();
-                  },
+          const body = await error.response.json<{ error: string }>();
+
+          if (body?.error?.includes("GitHub not connected")) {
+            toast.error("Please connect your GitHub account first", {
+              action: {
+                label: "Connect",
+                onClick: () => {
+                  openUserProfile();
                 },
-              });
-              onOpenChange(false);
-              return;
-            }
-          } else {
-            toast.error(
-              "Unable to import repository. Please check the URL and try again.",
-            );
+              },
+            });
+            onOpenChange(false);
+            return;
+          }
+
+          if (body?.error?.includes("Pro plan required")) {
+            toast.error("Upgrade to import repositories", {
+              action: {
+                label: "Upgrade",
+                onClick: () => openUserProfile(),
+              },
+            });
+            onOpenChange(false);
+            return;
           }
         }
+
+        toast.error(
+          "Unable to import repository. Please check the URL and try again.",
+        );
       }
     },
   });

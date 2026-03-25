@@ -3,23 +3,17 @@
 import { Poppins } from "next/font/google";
 import { SparkleIcon } from "lucide-react";
 import { FaGithub } from "react-icons/fa";
-import {
-  uniqueNamesGenerator,
-  adjectives,
-  colors,
-  animals,
-} from "unique-names-generator";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Kbd } from "@/components/ui/kbd";
-import { useCreateProject } from "@/features/projects/hooks/use-projects";
 
 import { ProjectsList } from "./projects-list";
 import { ProjectsCommandDialog } from "./projects-command-dialog";
 import { ImportGithubDialog } from "./import-github-dialog";
+import { NewProjectDialog } from "./new-project-dialog";
 
 const font = Poppins({
   subsets: ["latin"],
@@ -27,10 +21,9 @@ const font = Poppins({
 });
 
 export const ProjectsView = () => {
-  const createProject = useCreateProject();
-
   const [commandDialogOpen, setCommandDialogOpen] = useState(false);
   const [importDialogOpen, setImportDialogOpen] = useState(false);
+  const [newProjectDialogOpen, setNewProjectDialogOpen] = useState(false);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -41,6 +34,10 @@ export const ProjectsView = () => {
       if (event.key === "i" && (event.ctrlKey || event.metaKey)) {
         event.preventDefault();
         setImportDialogOpen((prev) => !prev);
+      }
+      if (event.key === "j" && (event.ctrlKey || event.metaKey)) {
+        event.preventDefault();
+        setNewProjectDialogOpen((prev) => !prev);
       }
     };
 
@@ -60,6 +57,10 @@ export const ProjectsView = () => {
       <ImportGithubDialog
         open={importDialogOpen}
         onOpenChange={setImportDialogOpen}
+      />
+      <NewProjectDialog
+        open={newProjectDialogOpen}
+        onOpenChange={setNewProjectDialogOpen}
       />
 
       <div className="flex min-h-screen flex-col items-center justify-center bg-sidebar p-6 md:p-16">
@@ -90,17 +91,7 @@ export const ProjectsView = () => {
               <Button
                 variant="outline"
                 className="flex h-full flex-col items-start justify-start gap-6 rounded-none border bg-background p-4"
-                onClick={() => {
-                  const projectName = uniqueNamesGenerator({
-                    dictionaries: [adjectives, colors, animals],
-                    separator: "-",
-                    length: 3,
-                  });
-
-                  createProject({
-                    name: projectName,
-                  });
-                }}
+                onClick={() => setNewProjectDialogOpen(true)}
               >
                 <div className="flex w-full items-center justify-between">
                   <SparkleIcon className="size-4" />
